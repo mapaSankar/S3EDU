@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>S3EDU - Intelligent Skill & Career Roadmap</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <div class="logo">
+        <span class="logo-badge">S3</span>
+        <span class="logo-text">EDU</span>
+      </div>
+      <div class="nav-actions">
+        <span id="userGreeting" class="user-greeting">Welcome, Learner</span>
+        <button id="resetBtn" class="btn btn-outline" style="display:none;">Reset Plan</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main-wrapper">
+
+    <!-- 0. WELCOME / LANDING PAGE -->
+    <section id="welcomeSection" class="welcome-card">
+      <div class="welcome-content">
+        <div class="welcome-badge">🚀 Empower Your Future</div>
+        <h1 class="welcome-title">Hello Learner,<br>Are you ready to build your career?</h1>
+        <p class="welcome-description">
+          Discover customized learning paths across Technology, Business, Foreign Languages, Teaching, and Design. 
+          Get personalized skill roadmaps, study schedules, practical exercises, and an AI Study Coach to help conquer everyday distractions.
+        </p>
+
+        <div class="welcome-features">
+          <div class="feature-pill">🎯 Goal-Driven Milestones</div>
+          <div class="feature-pill">🌍 Foreign Language Tracks</div>
+          <div class="feature-pill">⏱️ Personalized Timelines</div>
+          <div class="feature-pill">📊 Real-Time Progress Tracker</div>
+          <div class="feature-pill">🤖 AI Study & Life Coach</div>
+        </div>
+
+        <button id="letsGoBtn" class="btn btn-primary btn-large" onclick="startOnboarding()">
+          Let's Go &rarr;
+        </button>
+      </div>
+    </section>
+
+    <!-- 1. ONBOARDING WIZARD -->
+    <section id="wizardSection" class="wizard-card" style="display:none;">
+      <!-- Stepper Indicator -->
+      <div class="stepper">
+        <div class="step-node active" data-step="1">
+          <div class="circle">1</div>
+          <span>Profile</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-node" data-step="2">
+          <div class="circle">2</div>
+          <span>Domain & Goal</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-node" data-step="3">
+          <div class="circle">3</div>
+          <span>Skills</span>
+        </div>
+        <div class="step-line"></div>
+        <div class="step-node" data-step="4">
+          <div class="circle">4</div>
+          <span>Timeline</span>
+        </div>
+      </div>
+
+      <!-- Step 1: User Profile -->
+      <div class="wizard-panel active" id="step1">
+        <h2>Tell Us About Yourself</h2>
+        <p class="subtitle">We personalize your learning trajectory based on your daily availability and background.</p>
+        <div class="form-group">
+          <label for="userName">Full Name</label>
+          <input type="text" id="userName" placeholder="e.g. Alex Sharma" required />
+        </div>
+        <div class="form-group">
+          <label for="userLevel">Current Experience Level</label>
+          <select id="userLevel">
+            <option value="Beginner">Complete Beginner (Starting from scratch)</option>
+            <option value="Intermediate">Intermediate (Know fundamental concepts)</option>
+            <option value="Advanced">Advanced (Looking for fluency or leadership)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="dailyHours">Daily Study Commitment: <span id="hoursVal">2</span> hours/day</label>
+          <input type="range" id="dailyHours" min="1" max="10" value="2" />
+        </div>
+        <div class="btn-group right">
+          <button class="btn btn-primary" onclick="nextStep(2)">Next: Choose Category & Goal &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 2: Category & Goal Selection -->
+      <div class="wizard-panel" id="step2">
+        <h2>Select Your Domain & Goal</h2>
+        <p class="subtitle">First pick your field of interest, then select your specific target role.</p>
+
+        <!-- Category Selector Pills -->
+        <div class="category-selector-section">
+          <label class="section-label">Select Industry / Domain:</label>
+          <div class="category-tabs" id="categoryTabs">
+            <!-- Populated dynamically by JS -->
+          </div>
+        </div>
+
+        <!-- Goals matching selected category -->
+        <div class="goals-container-section">
+          <label class="section-label" id="goalsHeadingLabel">Available Goals in Technology:</label>
+          <div class="cards-grid" id="goalsGrid">
+            <!-- Populated dynamically based on category selection -->
+          </div>
+        </div>
+
+        <div class="btn-group">
+          <button class="btn btn-outline" onclick="prevStep(1)">&larr; Back</button>
+          <button class="btn btn-primary" onclick="nextStep(3)">Next: Inspect Skills &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 3: Required Skills Overview -->
+      <div class="wizard-panel" id="step3">
+        <h2>Required Competencies & Skills</h2>
+        <p class="subtitle">Based on your selection of <strong id="selectedGoalName"></strong>, here is the skill breakdown:</p>
+        <div class="skills-list" id="skillsOverviewList">
+          <!-- Populated by JS -->
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-outline" onclick="prevStep(2)">&larr; Back</button>
+          <button class="btn btn-primary" onclick="nextStep(4)">Next: Set Timeline &rarr;</button>
+        </div>
+      </div>
+
+      <!-- Step 4: Timeline Duration -->
+      <div class="wizard-panel" id="step4">
+        <h2>Set Your Target Duration</h2>
+        <p class="subtitle">Choose how quickly you wish to achieve this milestone.</p>
+        <div class="timeline-options-grid">
+          <label class="time-card">
+            <input type="radio" name="timelineDuration" value="1" />
+            <div class="card-inner">
+              <span class="months">1 Month</span>
+              <span class="intensity">Sprint / Intensive</span>
+              <p>Quick bootcamp pace for rapid skill building.</p>
+            </div>
+          </label>
+          <label class="time-card">
+            <input type="radio" name="timelineDuration" value="3" checked />
+            <div class="card-inner">
+              <span class="months">3 Months</span>
+              <span class="intensity">Recommended</span>
+              <p>Balanced & steady practical progress.</p>
+            </div>
+          </label>
+          <label class="time-card">
+            <input type="radio" name="timelineDuration" value="6" />
+            <div class="card-inner">
+              <span class="months">6 Months</span>
+              <span class="intensity">Deep Dive</span>
+              <p>Comprehensive mastery with extensive projects.</p>
+            </div>
+          </label>
+          <label class="time-card">
+            <input type="radio" name="timelineDuration" value="12" />
+            <div class="card-inner">
+              <span class="months">1 Year</span>
+              <span class="intensity">Mastery</span>
+              <p>Flexible pace alongside job or university.</p>
+            </div>
+          </label>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-outline" onclick="prevStep(3)">&larr; Back</button>
+          <button class="btn btn-success" onclick="generateRoadmap()">Generate My Roadmap &#10003;</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. DASHBOARD VIEW (Shown once roadmap is generated) -->
+    <section id="dashboardSection" class="dashboard-section" style="display:none;">
+      
+      <!-- Metrics Overview -->
+      <div class="metrics-grid">
+        <div class="metric-card">
+          <span class="metric-title">Target Goal</span>
+          <h3 id="dashGoalTitle">-</h3>
+          <span class="badge" id="dashCategoryBadge">-</span>
+          <span class="badge" id="dashLevelBadge">-</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-title">Duration & Commitment</span>
+          <h3 id="dashTimelineText">-</h3>
+          <span class="subtext" id="dashTotalHours">-</span>
+        </div>
+        <div class="metric-card">
+          <span class="metric-title">Overall Progress</span>
+          <div class="progress-bar-container">
+            <div class="progress-bar-fill" id="totalProgressFill" style="width: 0%;"></div>
+          </div>
+          <span class="metric-val" id="progressPercentage">0% Completed</span>
+        </div>
+      </div>
+
+      <!-- Roadmap Chart / Timeline -->
+      <div class="card roadmap-card">
+        <div class="card-header">
+          <div>
+            <h2>Curated Learning Timeline</h2>
+            <p class="subtitle">Sequential skill breakdown organized across your chosen time period.</p>
+          </div>
+        </div>
+        <div class="timeline-container" id="timelineChart">
+          <!-- Dynamically populated timeline milestones -->
+        </div>
+      </div>
+
+      <!-- Content Workspace: Tabs for Tutorials, Exercises & Projects -->
+      <div class="card workspace-card">
+        <div class="tabs-header">
+          <button class="tab-btn active" onclick="switchTab('tutorials')">📚 Tutorials & Guides</button>
+          <button class="tab-btn" onclick="switchTab('exercises')">✍️ Practical Exercises</button>
+          <button class="tab-btn" onclick="switchTab('projects')">🚀 Real-World Projects</button>
+        </div>
+
+        <div class="tab-content active" id="tutorialsTab">
+          <div class="items-list" id="tutorialsList"></div>
+        </div>
+
+        <div class="tab-content" id="exercisesTab">
+          <div class="items-list" id="exercisesList"></div>
+        </div>
+
+        <div class="tab-content" id="projectsTab">
+          <div class="items-list" id="projectsList"></div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- 3. STYLIZED AI CHATBOT WIDGET -->
+  <div class="chatbot-wrapper">
+    <!-- Floating Launcher Button -->
+    <button id="chatbotToggleBtn" class="chat-launcher-btn" onclick="toggleChatWindow()" title="Talk to AI Study & Life Coach">
+      <span class="chat-icon">🤖</span>
+      <span class="chat-launcher-text">Study Problem AI</span>
+      <span class="chat-ping-dot"></span>
+    </button>
+
+    <!-- Chat Modal Window -->
+    <div id="chatbotModal" class="chatbot-window" style="display: none;">
+      <!-- Chat Header -->
+      <div class="chat-header">
+        <div class="chat-header-info">
+          <div class="bot-avatar">🤖</div>
+          <div>
+            <h4>S3 AI Life & Study Coach</h4>
+            <span class="status-indicator"><span class="status-dot"></span> Online & Listening</span>
+          </div>
+        </div>
+        <div class="chat-header-actions">
+          <button class="icon-btn" onclick="promptApiKey()" title="Configure Gemini API Key (Optional)">⚙️</button>
+          <button class="icon-btn" onclick="toggleChatWindow()" title="Close chat">&times;</button>
+        </div>
+      </div>
+
+      <!-- Quick Suggestion Chips -->
+      <div class="chat-quick-chips">
+        <button class="chip" onclick="sendQuickPrompt('I am procrastinating and cannot focus on studying today')">😴 Procrastination</button>
+        <button class="chip" onclick="sendQuickPrompt('Phone and social media addiction is ruining my study routine')">📱 Phone Addiction</button>
+        <button class="chip" onclick="sendQuickPrompt('How do I memorize vocabulary and Kanji without forgetting?')">🧠 Memory & Vocab</button>
+        <button class="chip" onclick="sendQuickPrompt('I feel exhausted and burned out from balancing life and study')">🔥 Burnout & Stress</button>
+        <button class="chip" onclick="sendQuickPrompt('How do I build a consistent study habit when lazy?')">⏱️ Habit Building</button>
+      </div>
+
+      <!-- Messages Body -->
+      <div class="chat-messages" id="chatMessages">
+        <div class="chat-msg bot">
+          <div class="msg-avatar">🤖</div>
+          <div class="msg-bubble">
+            <strong>Hello Learner! 👋</strong><br>
+            Are daily life problems, procrastination, phone addiction, language barrier anxiety, or burnout spoiling your study flow? Tell me what you're dealing with today, and let's conquer it together!
+          </div>
+        </div>
+      </div>
+
+      <!-- Typing Indicator -->
+      <div id="chatTypingIndicator" class="typing-indicator" style="display: none;">
+        <span></span><span></span><span></span> S3 AI is formulating your solution...
+      </div>
+
+      <!-- Input Area -->
+      <form id="chatForm" class="chat-input-area" onsubmit="handleChatSubmit(event)">
+        <input 
+          type="text" 
+          id="chatInput" 
+          placeholder="e.g. I keep forgetting new words and getting distracted by my phone..." 
+          autocomplete="off" 
+          required 
+        />
+        <button type="submit" class="btn-chat-send" title="Send message">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="22" y1="2" x2="11" y2="13"></line>
+            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+          </svg>
+        </button>
+      </form>
+    </div>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
